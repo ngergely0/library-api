@@ -59,3 +59,23 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+| URL              | HTTP method | Auth | Json Response       |
+| ---------------- | ----------- | ---- | ------------------- |
+| /users/login     | POST        | N    | user's token        |
+| /users           | GET         | Y    | all users           |
+| /authors         | GET         | N    | all authors         |
+| /authors/{id}    | GET         | Y    | author data         |
+| /authors         | POST        | Y    | new author added    |
+| /authors/{id}    | PUT         | Y    | edited author       |
+| /authors/{id}    | DELETE      | Y    | deleted author id   |
+| /categories      | GET         | N    | all categories      |
+| /categories/{id} | GET         | Y    | category data       |
+| /categories      | POST        | Y    | new category added  |
+| /categories/{id} | PUT         | Y    | edited category     |
+| /categories/{id} | DELETE      | Y    | deleted category id |
+| /books           | GET         | N    | all books           |
+| /books/{id}      | GET         | Y    | book data           |
+| /books           | POST        | Y    | new book added      |
+| /books/{id}      | PUT         | Y    | edited book         |
+| /books/{id}      | DELETE      | Y    | deleted book id     |

@@ -18,7 +18,13 @@ class DatabaseSeeder extends Seeder
         CategorySeeder::class,
     ]);
 
-    $this->call(BookSeeder::class); // mindig utolsó
+    $this->call(BookSeeder::class); 
+
+    User::factory()->create([
+        'name' => 'Teszt',
+        'email' => 'teszt@gmail.com',
+        'password' => '123',
+    ]);
 }
 
 }

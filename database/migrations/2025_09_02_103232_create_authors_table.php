@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('authors', function (Blueprint $table) {
             $table->smallInteger('id')->unsigned()->autoIncrement();
             $table->string('name',255)->index()->notNull();
+            $table->string('nationality',255)->notNull();
+            $table->integer('age')->notNull();
+            $table->string('gender',255)->notNull();
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('authors');
     }
 };
