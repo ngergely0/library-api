@@ -160,4 +160,102 @@ class CategoryController extends Controller
             'category' => $category,
         ]);
     }
+
+     /**
+     * @api {get} /api/categories/:id/books Get all books in a category
+     * @apiName GetCategoryBooks
+     * @apiGroup Categories
+     * @apiVersion 1.0.0
+     *
+     * @apiParam {Number} id Category’s unique ID.
+     *
+     * @apiSuccess {Object} category Category information.
+     * @apiSuccess {Number} category.id Category ID.
+     * @apiSuccess {String} category.name Category name.
+     *
+     * @apiSuccess {Object[]} books List of books in the category.
+     * @apiSuccess {Number} books.id Book ID.
+     * @apiSuccess {String} books.title Book title.
+     * @apiSuccess {String} books.isbn Book ISBN.
+     * @apiSuccess {String} books.description Book description.
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *   "category": {
+     *     "id": 5,
+     *     "name": "Fantasy"
+     *   },
+     *   "books": [
+     *     {
+     *       "id": 12,
+     *       "title": "The Dragon's Path",
+     *       "isbn": "9781234567890",
+     *       "description": "Epic high fantasy adventure."
+     *     },
+     *     {
+     *       "id": 18,
+     *       "title": "Shadow of the Mountain",
+     *       "isbn": "9780987654321",
+     *       "description": "A tale of magic and destiny."
+     *     }
+     *   ]
+     * }
+     */
+
+    public function books($id)
+    {
+        $category = Category::findOrFail($id);
+        $books = $category->books;
+
+        return response()->json([
+            'category' => [
+                'id' => $category->id,
+                'name' => $category->name,
+            ],
+            'books' => $books,
+        ]);
+    }
+
+     /**
+     * @api {delete} /api/categories/:id/books/:book_id Remove a book from a category
+     * @apiName DeleteCategoryBook
+     * @apiGroup Categories
+     * @apiVersion 1.0.0
+     *
+     * @apiParam {Number} id Category’s unique ID.
+     * @apiParam {Number} book_id Book ID to remove.
+     *
+     * @apiSuccess {String} message Success message.
+     * @apiSuccess {Number} category_id Category ID.
+     * @apiSuccess {Number} book_id Removed book ID.
+     *
+     * @apiError BookNotFound Book not found within this category.
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *   "message": "Book removed from category successfully",
+     *   "category_id": 5,
+     *   "book_id": 12
+     * }
+     *
+     * @apiErrorExample {json} Error-Response:
+     * HTTP/1.1 404 Not Found
+     * {
+     *   "error": "Book not found for this category"
+     * }
+     */
+
+       public function deleteBook($id, $book_id)
+    {
+        $category = Category::findOrFail($id);
+        $book = $category->books()->where('id', $book_id)->first();
+
+        if (!$book) {
+            return response()->json([
+                'error' => 'Book not found for this author',
+            ], 404);
+        }
+    }
 }

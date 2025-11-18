@@ -89,6 +89,110 @@ class AuthorController extends Controller
         ], 201);
     }
 
+      /**
+     * @api {get} /api/authors/:id/books Get all books of an author
+     * @apiName GetAuthorBooks
+     * @apiGroup Authors
+     * @apiVersion 1.0.0
+     *
+     * @apiParam {Number} id Author’s unique ID.
+     *
+     * @apiSuccess {Object} author Author information.
+     * @apiSuccess {Number} author.id Author ID.
+     * @apiSuccess {String} author.name Author name.
+     *
+     * @apiSuccess {Object[]} books List of books written by the author.
+     * @apiSuccess {Number} books.id Book ID.
+     * @apiSuccess {String} books.title Book title.
+     * @apiSuccess {String} books.isbn Book ISBN.
+     * @apiSuccess {String} books.description Book description.
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *   "author": {
+     *     "id": 4,
+     *     "name": "J. R. R. Tolkien"
+     *   },
+     *   "books": [
+     *     {
+     *       "id": 10,
+     *       "title": "The Hobbit",
+     *       "isbn": "978000000001",
+     *       "description": "Fantasy adventure novel."
+     *     },
+     *     {
+     *       "id": 11,
+     *       "title": "The Lord of the Rings",
+     *       "isbn": "978000000002",
+     *       "description": "Epic fantasy trilogy."
+     *     }
+     *   ]
+     * }
+     */
+
+
+    public function books($id)
+    {
+        $author = Author::findOrFail($id);
+        $books = $author->books;
+
+        return response()->json([
+            'author' => [
+                'id' => $author->id,
+                'name' => $author->name,
+            ],
+            'books' => $books,
+        ]);
+    }
+
+    /**
+     * @api {delete} /api/authors/:id/books/:book_id Delete a book of an author
+     * @apiName DeleteAuthorBook
+     * @apiGroup Authors
+     * @apiVersion 1.0.0
+     *
+     * @apiParam {Number} id Author’s unique ID.
+     * @apiParam {Number} book_id Book’s unique ID.
+     *
+     * @apiSuccess {String} message Success message.
+     * @apiSuccess {Number} book_id Deleted book ID.
+     *
+     * @apiError BookNotFound Book not found for this author.
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *   "message": "Book deleted successfully",
+     *   "book_id": 15
+     * }
+     *
+     * @apiErrorExample {json} Error-Response:
+     * HTTP/1.1 404 Not Found
+     * {
+     *   "error": "Book not found for this author"
+     * }
+     */
+
+       public function deleteBook($id, $book_id)
+    {
+        $author = Author::findOrFail($id);
+        $book = $author->books()->where('id', $book_id)->first();
+
+        if (!$book) {
+            return response()->json([
+                'error' => 'Book not found for this author',
+            ], 404);
+        }
+
+        $book->delete();
+
+        return response()->json([
+            'message' => 'Book deleted successfully',
+            'book_id' => $book_id,
+        ]);
+    }
+
     /**
      * @api {put} /api/authors/:id Update an existing author
      * @apiName UpdateAuthor

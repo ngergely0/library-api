@@ -18,7 +18,8 @@ Route::post('/authors', [AuthorController::class, 'store'])->middleware('auth:sa
 Route::put('/authors/{id}', [AuthorController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/authors/{id}', [AuthorController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/authors/{id}', [AuthorController::class, 'show'])->middleware('auth:sanctum');
-
+Route::get('/authors/{id}/books', [AuthorController::class, 'books'])->middleware('auth:sanctum');
+Route::delete('/authors/{id}/books/{book_id}', [AuthorController::class, 'deleteBook'])->middleware('auth:sanctum');
 
 Route::get('/books', [BookController::class, 'index']); 
 Route::post('/books', [BookController::class, 'store'])->middleware('auth:sanctum');
@@ -33,5 +34,8 @@ Route::post('/categories', [CategoryController::class, 'store'])->middleware('au
 Route::put('/categories/{id}', [CategoryController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->middleware('auth:sanctum');
+Route::get('/categories/{id}/books', [CategoryController::class, 'books'])->middleware('auth:sanctum');
+Route::delete('/categories/{id}/books/{book_id}', [CategoryController::class, 'deleteBook'])->middleware('auth:sanctum');
+
 
 
