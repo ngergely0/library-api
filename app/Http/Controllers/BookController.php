@@ -43,9 +43,17 @@ class BookController extends Controller
      *   ]
      * }
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
+        $query = Book::query();
+
+        if ($request->has('needle')) {
+            $needle = $request->input('needle');
+            $query->where('name', 'like', "%{$needle}%");
+        }
+
+        $books = $query->get();
+
         return response()->json([
             'books' => $books,
         ]);
@@ -90,7 +98,7 @@ class BookController extends Controller
 
         return response()->json([
             'book' => $book,
-        ]);
+        ], 201);
     }
 
     /**
@@ -130,13 +138,18 @@ class BookController extends Controller
      */
     public function update(BookRequest $request, $id)
 	{
-		$book = Book::findOrFail($id);
+		$book = Book::find($id);
+        
+        if (!$book) {
+            return response()->json(['message' => 'Not found!'], 404);
+        }
+
         $book->update($request->validated());
 
-		return response()->json([
-			'book' => $book,
-		]);
-	}
+ 		return response()->json([
+ 			'book' => $book,
+ 		]);
+ 	}
 
     /**
      * @api {delete} /api/books/:id Delete a book
@@ -150,20 +163,26 @@ class BookController extends Controller
      * @apiSuccess {Number} id Deleted book ID.
      *
      * @apiSuccessExample {json} Success-Response:
-     * HTTP/1.1 200 OK
+     * HTTP/1.1 410 Gone
      * {
-     *   "message": "Book deleted successfully",
+     *   "message": "Deleted",
      *   "id": 5
      * }
      */
     public function destroy($id)
     {
-        $book = Book::findOrFail($id);
+        $book = Book::find($id);
+        
+        if (!$book) {
+            return response()->json(['message' => 'Not found!'], 404);
+        }
+        
         $book->delete();
+        
         return response()->json([
-            'message' => 'Book deleted successfully',
+            'message' => 'Deleted',
             'id' => $id
-        ]);
+        ], 410);
     }
 
     /**

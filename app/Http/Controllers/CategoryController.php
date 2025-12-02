@@ -33,9 +33,17 @@ class CategoryController extends Controller
      *   ]
      * }
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::all();
+        $query = Category::query();
+
+        if ($request->has('needle')) {
+            $needle = $request->input('needle');
+            $query->where('name', 'like', "%{$needle}%");
+        }
+
+        $categories = $query->get();
+
         return response()->json([
             'categories' => $categories,
         ]);
@@ -68,7 +76,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'category' => $category,
-        ]);
+        ], 201);
     }
 
     /**
@@ -93,7 +101,12 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, $id)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
+        
+        if (!$category) {
+            return response()->json(['message' => 'Not found!'], 404);
+        }
+
         $category->update($request->validated());
 
         return response()->json([
@@ -113,20 +126,26 @@ class CategoryController extends Controller
      * @apiSuccess {Number} id Deleted category ID.
      *
      * @apiSuccessExample {json} Success-Response:
-     * HTTP/1.1 200 OK
+     * HTTP/1.1 410 Gone
      * {
-     *   "message": "Category deleted successfully",
+     *   "message": "Deleted",
      *   "id": 3
      * }
      */
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
+        
+        if (!$category) {
+            return response()->json(['message' => 'Not found!'], 404);
+        }
+        
         $category->delete();
+        
         return response()->json([
-            'message' => 'Category deleted successfully',
+            'message' => 'Deleted',
             'id' => $id
-        ]);
+        ], 410);
     }
 
     /**

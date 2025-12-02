@@ -42,9 +42,17 @@ class AuthorController extends Controller
      *   ]
      * }
      */
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::all();
+        $query = Author::query();
+
+        if ($request->has('needle')) {
+            $needle = $request->input('needle');
+            $query->where('name', 'like', "%{$needle}%");
+        }
+
+        $authors = $query->get();
+        
         return response()->json([
             'authors' => $authors,
         ]);
@@ -222,7 +230,12 @@ class AuthorController extends Controller
      */
     public function update(AuthorRequest $request, $id)
     {
-        $author = Author::findOrFail($id);
+        $author = Author::find($id);
+        
+        if (!$author) {
+            return response()->json(['message' => 'Not found!'], 404);
+        }
+
         $author->update($request->validated());
 
         return response()->json([
@@ -242,20 +255,26 @@ class AuthorController extends Controller
      * @apiSuccess {Number} id Deleted author ID.
      *
      * @apiSuccessExample {json} Success-Response:
-     * HTTP/1.1 200 OK
+     * HTTP/1.1 410 Gone
      * {
-     *   "message": "Author deleted successfully",
+     *   "message": "Deleted",
      *   "id": 3
      * }
      */
     public function destroy($id)
     {
-        $author = Author::findOrFail($id);
+        $author = Author::find($id);
+        
+        if (!$author) {
+             return response()->json(['message' => 'Not found!'], 404);
+        }
+        
         $author->delete();
+        
         return response()->json([
-            'message' => 'Author deleted successfully',
+            'message' => 'Deleted',
             'id' => $id
-        ]);
+        ], 410);
     }
 
     /**
